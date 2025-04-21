@@ -1,9 +1,0 @@
-[INFO] Logging started at Sun Apr 20 09:18:02 PM MDT 2025
-[INFO] Creating directory repo
-[INFO] Dumping .git directory from http://example.com/.git
-[Downloading .git directory] |/-\[done]
-[ERROR] An error occurred while downloading the .git directory.
-[INFO] Logging started at Sun Apr 20 09:23:03 PM MDT 2025
-[INFO] Dumping .git directory from http://example.com/.git
-[Downloading .git directory] |/-\[done]
-[ERROR] An error occurred while downloading the .git directory.
