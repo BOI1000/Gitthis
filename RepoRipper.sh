@@ -62,7 +62,7 @@ checks() {
     fi
     if [ ! -d "$2" ]; then
         echo "[INFO] Creating directory $2"
-        mkdir -p "$2" || {
+        mkdir -p "$2" 2>/dev/null || {
             echo "[ERROR] Failed to create directory $2"
             exit 1
         }
