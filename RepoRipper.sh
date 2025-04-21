@@ -86,6 +86,7 @@ main() {
     echo "[INFO] Building git repository from $url"
     cd "$folder" || exit
     if [ ! -d ".git" ]; then
+        rm -rf .git
         mkdir -p ".git"
         mv * .git/ 2>/dev/null
     elif [ -f ".git" ]; then
