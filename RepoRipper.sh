@@ -11,6 +11,18 @@ if ! command -v wget &>/dev/null || ! command -v git &>/dev/null; then
     exit 1
 fi
 
+echo -e "\e[1;31m"
+cat << "EOF"
+
+__________                    __________.__                            
+\______   \ ____ ______   ____\______   \__|_____ ______   ___________ 
+ |       _// __ \\____ \ /  _ \|       _/  \____ \\____ \_/ __ \_  __ \
+ |    |   \  ___/|  |_> >  <_> )    |   \  |  |_> >  |_> >  ___/|  | \/
+ |____|_  /\___  >   __/ \____/|____|_  /__|   __/|   __/ \___  >__|   
+        \/     \/|__|                 \/   |__|   |__|        \/       
+EOF
+echo -e "\e[0m"
+echo -e "[MSG] RepoRipper.sh - Do you git it? - by @Deemon\n"
 # Enable logging
 LOG_FILE="RepoRipper.log"
 exec > >(tee -a "$LOG_FILE") 2>&1
