@@ -2,27 +2,45 @@
 # RepoRipper.sh going nuclear
 # This script is designed to clone a git repository and extract all files from it.
 
-if [[ "$1" == "--help" || "$#" -eq 0 ]]; then
-    echo "Usage: $0 <.git url> <output directory>"
+# Initial checks and help message
+
+help_message() {
+    echo """
+    Usage: $0 <.git url> <output directory>
+
+    This script clones a .git directory from a remote repository and restores it locally.
+
+    Arguments:
+    <.git url>       The URL of the .git directory to clone.
+    <output directory> The directory where the cloned repository will be saved.
+
+    example:
+    $0 http://example.com/repo.git /path/to/output"""
     exit 0
-fi
-if ! command -v wget &>/dev/null || ! command -v git &>/dev/null; then
+}
+
+if [[ "$1" == "--help" || "$#" -ne 2 ]]; then
+    help_message
+elif ! command -v wget &>/dev/null || ! command -v git &>/dev/null; then
     echo "[ERROR] Required tools (wget, git) are not installed."
+    echo "Please install wget and git to use this script:"
+    echo -e "\tsudo apt install wget git -y"
     exit 1
 fi
 
+# Displaying the script header (most important part of the script)
 echo -e "\e[1;31m"
 cat << "EOF"
-
 __________                    __________.__                            
 \______   \ ____ ______   ____\______   \__|_____ ______   ___________ 
  |       _// __ \\____ \ /  _ \|       _/  \____ \\____ \_/ __ \_  __ \
  |    |   \  ___/|  |_> >  <_> )    |   \  |  |_> >  |_> >  ___/|  | \/
  |____|_  /\___  >   __/ \____/|____|_  /__|   __/|   __/ \___  >__|   
         \/     \/|__|                 \/   |__|   |__|        \/       
+
 EOF
 echo -e "\e[0m"
-echo -e "[MSG] RepoRipper.sh - Do you git it? - by @Deemon\n"
+echo -e "RepoRipper.sh v0.1 - Do you git it? - by @Deemon\n"
 # Enable logging
 LOG_FILE="RepoRipper.log"
 exec > >(tee -a "$LOG_FILE") 2>&1
@@ -35,32 +53,24 @@ spin() {
     local delay=0.1
     local spinstr='|/-\'
     local temp
-    echo -n "[$task] "
+    echo -n "[$task]    "
     while kill -0 $pid 2>/dev/null; do
         temp=${spinstr#?}
-        printf "\b%c" "$spinstr"
+        printf "\b\b\b[%c]" "$spinstr"
         spinstr=$temp${spinstr%"$temp"}
         sleep $delay
     done
-    printf "\b"  # Clear the spinner character
-    echo "[done]"
+    printf "\b\b\b[Done]\n" # the spinnies
 }
 # Checking function
 checks() {
-    if [ -z "$1" ]; then
-        echo "[ERROR] No .git URL provided."
-        echo "[INFO] Usage: $0 <.git url> <output directory>"
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        help_message
         exit 1
-    fi
-    if [ "$#" -ne 2 ]; then
-        echo "[ERROR] Usage: $0 <.git url> <output directory>"
-        exit 1
-    fi
-    if ! [[ "$1" =~ ^https?://.*\.git$ ]]; then
+    elif ! [[ "$1" =~ ^https?://[a-zA-Z0-9./_-]+\.git$ ]]; then
         echo "[ERROR] Invalid .git URL: $1"
         exit 1
-    fi
-    if [ ! -d "$2" ]; then
+    elif [ ! -d "$2" ]; then
         echo "[INFO] Creating directory $2"
         mkdir -p "$2" 2>/dev/null || {
             echo "[ERROR] Failed to create directory $2"
@@ -89,12 +99,10 @@ main() {
         rm -rf .git
         mkdir -p ".git"
         mv * .git/ 2>/dev/null
-    elif [ -f ".git" ]; then
-        echo "[INFO] changing .git to a directory."
-        mv .git .git.old
-        rm -rf .git
-        mkdir -p ".git"
-        mv * .git/ 2>/dev/null
+        if [ $? -ne 0 ]; then
+            echo "[ERROR] Failed to move files to .git directory."
+            exit 1
+        fi
     fi
     
     echo "[INFO] Restoring git repository from $url"
@@ -122,4 +130,13 @@ echo "[FIN] Script execution completed at $(date)"
 # End of script
 # This script is designed to clone a git repository and extract all files from it.
 # It uses wget to download the .git directory and then restores the repository using git.
-# Get ready for post upload testing :/
+# Will add more features in the future (like colors and options). Will add versions so like... this is v0.1 yep yep
+# Small changes will not be noted in the versioning system, only major changes will be recongized.
+# lemme add like a banner down here or something
+#  __________________________________________________
+# |                                                  |
+# |                                                  |
+# |                this is a banner                  |
+# |                                                  |
+# |                                                  |
+# |__________________________________________________|
