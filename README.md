@@ -4,7 +4,7 @@ Gitthis is a collection of pentesting tools designed to assist in ethical hackin
 
 ## Features
 
-- Tools for analyzing and extracting information from Git repositories. (For now)
+- Random Tools (For now)
 - Scripts for automating common pentesting tasks.
 - Designed for ethical hacking and security research.
 
@@ -29,4 +29,4 @@ All tools in this repository are intended for EDUCATIONAL PURPOSES and authorize
 ---
 
 Will be adding more tools here in the future
-Will be making project: FAwn
+Will be making project:  *FAwn*
