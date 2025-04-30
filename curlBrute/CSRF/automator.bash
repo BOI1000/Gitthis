@@ -3,7 +3,7 @@
 # obviously, change the URL and wordlist to your needs
 
 bash CSRFbypass.bash \
-    'https://example.com/login?username=admin&password=HIT' \ 
+    'https://example.com/login?username=admin&password=HIT' \
     wordlist.txt
 exit 0
 
