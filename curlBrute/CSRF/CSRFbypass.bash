@@ -10,11 +10,13 @@ function csrf_brutus_one() {
         if echo "$data"|grep -q "HIT"; then
             hitter=$(echo "$data"|sed "s/HIT/$line/g")
         fi
-        curl -b "$cfile" -c "$cfile" -v \
+        curl -v \
+            -b "$cfile" -c "$cfile" \
             -L "$url" \
             -A "$agent" \
             -H "Content-Type: application/x-www-form-urlencoded" \
-            --data "$hitter&_csrf=$token"
+            --data "$hitter&_csrf=$token" \
+            || { exit 1 }
         echo ""
     done < "$file"
 }
