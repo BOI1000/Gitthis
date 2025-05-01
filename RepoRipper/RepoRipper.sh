@@ -102,7 +102,6 @@ main() {
     wait $wget_pid
     if [ $? -ne 0 ]; then
         echo "[ERROR] An error occurred while downloading the .git directory."
-        rm -rf "$folder"
         exit 1
     fi
     
@@ -139,7 +138,6 @@ folder=$2
 checks "$url" "$folder"
 main "$url" "$folder"
 log "FIN" "Script execution completed."
-# v0.2 is untested. Should be working.
 #  __________________________________________________
 # |                                                  |
 # |                                                  |
