@@ -15,8 +15,9 @@ help_message() {
     <output directory> The directory where the cloned repository will be saved.
 
     example:
-    $0 http://example.com/repo.git /path/to/output"""
-    exit 0
+    $0 http://example.com/.git /path/to/output
+    """
+    exit 1
 }
 
 if [[ "$1" == "--help" || "$#" -ne 2 ]]; then
@@ -40,11 +41,18 @@ __________                    __________.__
 
 EOF
 echo -e "\e[0m"
-echo -e "RepoRipper.sh v0.1 - Do you git it? - by @Deemon\n"
+echo -e "RepoRipper.sh v0.2 - Do you git it? - by @Deemon\n"
 # Enable logging
-LOG_FILE="RepoRipper.log"
+LOG_FILE="repoRipper.log"
+# TODO: Clean this part up v
 exec > >(tee -a "$LOG_FILE") 2>&1
-echo "[INFO] Logging started at $(date)"
+log() {
+    local level=$1
+    local message=$2
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$level] $message"
+}
+log "INFO" "Logging to $LOG_FILE"
+# TODO: Clean this part up ^
 
 # Spinner function for visual feedback
 spin() {
@@ -53,27 +61,31 @@ spin() {
     local delay=0.1
     local spinstr='|/-\'
     local temp
-    echo -n "[$task]    "
+    echo -n "[$task]    " >&2
     while kill -0 $pid 2>/dev/null; do
         temp=${spinstr#?}
-        printf "\b\b\b[%c]" "$spinstr"
+        printf "\b\b\b[%c]" "$spinstr" >&2
         spinstr=$temp${spinstr%"$temp"}
         sleep $delay
     done
-    printf "\b\b\b[Done]\n" # the spinnies
+    printf "\b\b\b[Done]\n" >&2 # the spinnies
 }
 # Checking function
 checks() {
     if [ -z "$1" ] || [ -z "$2" ]; then
         help_message
-        exit 1
     elif ! [[ "$1" =~ ^https?://[a-zA-Z0-9./_-]+\.git$ ]]; then
-        echo "[ERROR] Invalid .git URL: $1"
+        log "ERROR" "Invalid .git URL: $1"
         exit 1
+    elif [ -e "$2" ] && [ ! -d "$2" ]; then
+        log "ERROR" "Output path $2 exists and is not a directory."
+        exit 1
+    elif [ -e "$2" ] && [ -d "$2" ]; then
+        log "INFO" "Directory $2 already exists. Proceeding with the script."
     elif [ ! -d "$2" ]; then
-        echo "[INFO] Creating directory $2"
+        log "INFO" "Creating directory $2"
         mkdir -p "$2" 2>/dev/null || {
-            echo "[ERROR] Failed to create directory $2"
+            log "ERROR" "Failed to create directory $2"
             exit 1
         }
     fi
@@ -83,56 +95,51 @@ main() {
     local url=$1
     local folder=$2
     
-    echo "[INFO] Dumping .git directory from $url"
+    log "INFO" "Dumping .git directory from $url"
     wget -q -r -np -nH --cut-dirs=1 --reject "index.html*" -P "$folder" "$url" &
     wget_pid=$!
     spin $wget_pid "Downloading .git directory"
     wait $wget_pid
     if [ $? -ne 0 ]; then
         echo "[ERROR] An error occurred while downloading the .git directory."
+        rm -rf "$folder"
         exit 1
     fi
     
-    echo "[INFO] Building git repository from $url"
+    log "INFO" "Building git repository from $url"
     cd "$folder" || exit
     if [ ! -d ".git" ]; then
         rm -rf .git
         mkdir -p ".git"
         mv * .git/ 2>/dev/null
         if [ $? -ne 0 ]; then
-            echo "[ERROR] Failed to move files to .git directory."
+            log "ERROR" "Failed to move files to .git directory."
             exit 1
         fi
     fi
     
-    echo "[INFO] Restoring git repository from $url"
+    log "INFO" "Restoring git repository from $url"
     git checkout . &>/dev/null
     git_pid=$!
     spin $git_pid "Restoring repository"
     wait $git_pid
     if [ $? -eq 0 ]; then
-        echo "[INFO] Repository restored successfully."
+        log "INFO" "Repository restored successfully."
         echo "[INFO] Repository log:"
         git log --oneline --graph --decorate --all
         echo "[INFO] Repository status:"
         git status
     else
-        echo "[ERROR] Failed to restore repository."
+        log "ERROR" "Failed to restore repository."
         exit 1
     fi
 }
-# Main script execution
 url=$1
 folder=$2
 checks "$url" "$folder"
 main "$url" "$folder"
-echo "[FIN] Script execution completed at $(date)"
-# End of script
-# This script is designed to clone a git repository and extract all files from it.
-# It uses wget to download the .git directory and then restores the repository using git.
-# Will add more features in the future (like colors and options). Will add versions so like... this is v0.1 yep yep
-# Small changes will not be noted in the versioning system, only major changes will be recongized.
-# lemme add like a banner down here or something
+log "FIN" "Script execution completed."
+# v0.2 is untested. Should be working.
 #  __________________________________________________
 # |                                                  |
 # |                                                  |
