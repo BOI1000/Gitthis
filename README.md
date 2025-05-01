@@ -11,7 +11,7 @@ Gitthis is a collection of pentesting tools designed to assist in ethical hackin
 ## Requirements
 
 - A Unix-based shell (e.g., Bash)
-- Relevant tools installed (e.g., Git, wget, and whatever else I use in my scripts)
+- Relevant tools installed (e.g., git, wget, curl, and whatever else I use in my scripts)
 - Knowledge of ethical hacking and responsible tool usage
 
 ## Installation
