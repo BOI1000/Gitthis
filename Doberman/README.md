@@ -1,0 +1,3 @@
+# Will update this file later...
+For now: Backdrop CMS v1.27.1 exploit works like a charm
+Currenty pwning a noob using my own scripts...RepoRipper.sh, HMySQL.php, Doberman.py... Using more of my scripts than actual tools.
