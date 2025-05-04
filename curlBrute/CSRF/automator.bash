@@ -4,7 +4,7 @@
 
 bash CSRFbypass.bash \
     'https://example.com/login?username=admin&password=HIT' \
-    wordlist.txt
+    '/usr/share/wordlists/rockyou.txt'
 exit 0
 
 # This script might not work for all websites, as CSRF tokens can be implemented in various ways.

@@ -1,7 +1,7 @@
 #!/bin/bash
 # If anyone were to use the curlBrute script in a bash shell, I recommend using this format to execute it:
 
- bash curlBrute.bash \
+bash curlBrute.bash \
     "https://example.com/login.php?username=admin&password=HIT" \
     "/usr/share/wordlists/rockyou.txt"
 exit 0 

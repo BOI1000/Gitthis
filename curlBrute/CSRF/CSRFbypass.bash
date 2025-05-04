@@ -16,7 +16,7 @@ function csrf_brutus_one() {
             -A "$agent" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             --data "$hitter&_csrf=$token" \
-            || { exit 1 }
+            || { exit 1; }
         echo ""
     done < "$file"
 }
