@@ -58,7 +58,7 @@ checks() {
     fi
 }
 
-if [[ "$1" == "--help" || "$#" -ne 2 ]]; then
+if [[ "$1" == "--help" ]]; then
     help_message
 elif ! command -v wget &>/dev/null || ! command -v git &>/dev/null; then
     echo "[ERROR] Required tools (wget, git) are not installed."
