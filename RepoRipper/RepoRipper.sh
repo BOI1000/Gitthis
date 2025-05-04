@@ -92,7 +92,7 @@ main() {
     spin $wget_pid "Downloading .git directory"
     wait $wget_pid
     if [ $? -ne 0 ]; then
-        log "[ERROR]" "An error occurred while downloading the .git directory."
+        log "ERROR" "An error occurred while downloading the .git directory."
         exit 1
     fi
     
