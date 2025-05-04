@@ -79,7 +79,7 @@ __________                    __________.__
 
 EOF
 echo -e "\e[0m"
-echo -e "RepoRipper.sh v0.3 - Do you git it? - by @Deemon\n"
+echo -e "RepoRipper.sh v0.3 - Do you git it? - by @3LEv4t0r\n"
 
 # Main function
 main() {

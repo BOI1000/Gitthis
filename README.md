@@ -28,5 +28,4 @@ All tools in this repository are intended for EDUCATIONAL PURPOSES and authorize
 
 ---
 
-Will be adding more tools here in the future
-Will be making project:  *FAwn*
+Doberman.

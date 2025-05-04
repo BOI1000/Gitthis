@@ -129,4 +129,5 @@ while (true) {
 }
 $conn->close();
 echo "Connection closed.\n";
+// by 3LEv4t0r
 ?>
