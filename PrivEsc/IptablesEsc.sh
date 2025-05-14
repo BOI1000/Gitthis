@@ -28,7 +28,7 @@ listKeys() {
     if [ -z "$out" ]; then
         echo -e "[-]\tNone"
         echo -en "[?] Create a new SSH key? (y/N): "
-        read -rn1 answer; echo ""
+        read -srn1 answer; echo ""
         if [[ "$answer" =~ ^[Yy]$ ]]; then
             makeKey
         else
@@ -39,7 +39,7 @@ listKeys() {
             echo -e "[+]\t$key"
         done
         echo -n "[?] Create a new SSH key anyway? (y/N): "
-        read -rn1 answer; echo ""
+        read -srn1 answer; echo ""
         if [[ "$answer" =~ ^[Yy]$ ]]; then
             makeKey
         fi
@@ -62,7 +62,7 @@ chooseTarget() {
     elif [ ! -f "$target" ]; then
         echo "[!] $targetfile does not exist."
         echo -n "[?] Continue anyway? (y/N): "
-        read -rn1 answer; echo ""
+        read -srn1 answer; echo ""
         if [[ $answer =~ ^[Yy]$ ]]; then
             targetfile="$target"
             touch "$targetfile"
