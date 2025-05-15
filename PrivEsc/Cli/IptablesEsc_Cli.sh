@@ -93,12 +93,14 @@ Flush()
 }
 Banner
 if [[ $# -eq 0 ]]; then
+    initColors
     Help
     exit 1
 fi
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -h|--help)
+            initColors
             Help
             exit 0
             ;;
@@ -135,6 +137,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         *)
+            initColors
             Help
             echo "[!] Unknown option: $1"
             exit 1
