@@ -9,8 +9,8 @@ banner = r"""
     (    |\___
     /         *
    /   (_____/
-  /____/   Doberman.py - by @3LEv4t0r
-           Yes, New Name, Same Code, Same Hacker.
+  /____/   Doberman.py - by @theRealHacker
+           DoberPwn.py?
 """
 
 def create_files(module_name, shell_file_path):

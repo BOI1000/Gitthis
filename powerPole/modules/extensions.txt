@@ -8,4 +8,6 @@
 .js
 .html
 .php
+.phar
 .json
+.jar

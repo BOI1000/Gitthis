@@ -10,6 +10,7 @@ function csrf_brutus_one() {
         if echo "$data"|grep -q "HIT"; then
             hitter=$(echo "$data"|sed "s/HIT/$line/g")
         fi
+        echo "$hitter"
         curl -v \
             -b "$cfile" -c "$cfile" \
             -L "$url" \

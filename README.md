@@ -28,4 +28,4 @@ All tools in this repository are intended for EDUCATIONAL PURPOSES and authorize
 
 ---
 
-Doberman.
+Learning AD via HTB academy

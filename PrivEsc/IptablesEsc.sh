@@ -86,10 +86,10 @@ inject_save() {
     fi
 }
 cleanUpOption() {
-    echo -n "[?] Flush iptable? (Y/n): "
+    echo -n "[?] Flush iptables? (Y/n): "
     read -srn1 answer; echo ""
     if [[ "$answer" =~ ^[Yy]$ ]] || [ -z "$answer" ]; then
-        sudo iptable -F && echo "[*] Flushed iptable successfully."
+        sudo iptables -F && echo "[*] Flushed iptable successfully."
         exit 0
     else
         echo "[*] Exiting."
