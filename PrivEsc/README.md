@@ -4,7 +4,7 @@ A folder for all privilege escalation scripts.
 Scripts built for automating privilege escalation.
 
 ## Updates
-- Updated IptablesEsc.sh (better output, fixed typos)
+- Updated IptablesEsc.sh (new function: cealUpOption)
 
 ### Notes
-- Will make a different IptablesEsc.sh script (./IptablesEsc.sh {options})
+- working a different IptablesEsc.sh script (./IptablesEsc.sh {options})

