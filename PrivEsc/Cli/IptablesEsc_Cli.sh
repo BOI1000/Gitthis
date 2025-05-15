@@ -110,3 +110,4 @@ initColors
 if [ "$check" = true ]; then
     initCheck
 fi
+# Work in progress
