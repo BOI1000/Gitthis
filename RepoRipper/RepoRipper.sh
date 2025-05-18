@@ -1,10 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 initColors() {
     if [ "$nocolor" != true ]; then
         red='\033[0;31m'
         grn='\033[0;32m'
         blu='\033[1;34m'
         rst='\033[0m'
+    else
+        red=''
+        grn=''
+        blu=''
+        rst=''
     fi
 }
 log() {
@@ -15,6 +20,8 @@ log() {
 gGrep() {
     initColors
     local grep="$1"
+    local path="$2"
+    cd "$path" 2>/dev/null || { log "${red}ERROR${rst}" "$path is not a directory"; exit 1; }
     IFS="," read -ra keywords <<< "$grep"
     for k in "${keywords[@]}"; do
         log "${grn}INFO${rst}" "Searching repo for $k"
@@ -37,11 +44,12 @@ help_message() {
     echo "  -nc, --no-color              Disable colored output."
     echo "  -h, --help                   Show this help message and exit."
     echo ""
-    echo "  --gG, --grep <k1,k2>         Run a git grep for comma-separated keywords like emails, usernames, etc."
+    echo "  --gG, --grep <k1,k2> <path>  Run a git grep for comma-separated keywords like emails, usernames, etc."
+    echo ""
     echo "Example:"
     echo "  $0 -u http://example.com/.git -f myrepo -lf mylog.log"
     echo ""
-    exit 0
+    exit 1
 }
 Banner() {
     echo -e "${red}"
@@ -55,7 +63,7 @@ Banner() {
 
 EOF
     echo -e "${rst}"
-    echo -e "RepoRipper.sh v1.0 - OWASP - by @${red}theRealHacker${rst}\n"
+    echo -e "RepoRipper.sh v1.1 - OWASP - by @${red}theRealHacker${rst}\n"
 }
 spin() {
     local pid=$1
@@ -63,14 +71,14 @@ spin() {
     local delay=0.1
     local spinstr='|/-\'
     local temp
-    echo -en "[$task]    " >&2
+    echo -en "[$task]    " && sleep 0.1
     while kill -0 $pid 2>/dev/null; do
         temp=${spinstr#?}
         printf "\b\b\b[%c]" "$spinstr" >&2
         spinstr=$temp${spinstr%"$temp"}
         sleep $delay
     done
-    printf "\b\b\b[${grn}Done${rst}]\n" >&2
+    printf "\b\b\b[${grn}Done${rst}]\n"
 }
 checks() {
     local url="$1"
@@ -117,22 +125,23 @@ Main() {
     log "${blu}INFO${rst}" "Building git repository from $url"
     cd "$folder" || exit 1
     if [ ! -d ".git" ]; then # will update this next time
-        rm -rf .git && mkdir -p ".git" && mv * .git/ 2>/dev/null || \
+        rm -rf .git && mkdir -p .git && mv * .git/ 2>/dev/null || \
             { log "${red}ERROR${rst}" "Failed to move files to .git directory"; exit 1; }
     fi
 
     log "${blu}INFO${rst}" "Restoring git repository from $url"
     git checkout . &>/dev/null && log "${grn}INFO${rst}" "Repository restored successfully" || \
         { log "${red}INFO${rst}" "Failed to restore repository."; exit 1; }
-    log "${blu}INFO${rst}" "Repository log:"
+    log "${grn}INFO${rst}" "Repository log:"
     git log --oneline --graph --decorate --all
-    log "${blu}INFO${rst}" "Repository status:"
+    log "${grn}INFO${rst}" "Repository status:"
     git status
 }
 url=""
 folder="repo"
 log_file="repoRipper.log"
 nocolor=false
+initColors
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -u|--url)
@@ -154,23 +163,25 @@ while [[ $# -gt 0 ]]; do
             fi
             log_file="$2"; shift 2;;
         -gG|--grep)
-            if [[ -z "$2" || "$2" == -* ]]; then
-                log "${red}ERROR${rst}" "$1 requires an argument."
+            if [[ -z "$2" || "$2" == -* ]] || [ -z "$3" ]; then
+                log "${red}ERROR${rst}" "$1 requires two arguments."
                 help_message
             fi
-            gGrep "$2"; shift 2;;
+            gGrep "$2" "$3"; shift 3;;
         -nc|--no-color)
-            nocolor=true; shift;;
+            nocolor=true; initColors; shift;;
         -h|--help)
             help_message;;
+        -v|--version)
+            echo "v1.1"
+            exit 0;;
         *)
             shift;;
     esac
 done
-initColors
 Banner
 checks "$url" "$folder"
-exec > >(tee -a "$log_file") 2>&1
+exec > >(tee -a "$log_file")
 log "${blu}INFO${rst}" "Logging to $log_file"
 Main "$url" "$folder"
 log "${grn}FIN${rst}" "Script execution completed."

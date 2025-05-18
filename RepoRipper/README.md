@@ -55,7 +55,7 @@ sudo apt install wget git -y
 
 ## Author
 
-**@theRealHacker**
+**@theRealHacker** (aka. BOI1000)
 
 ---
 
