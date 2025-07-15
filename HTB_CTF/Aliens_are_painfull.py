@@ -25,7 +25,7 @@ $ex.waitFor()
 		return flag.group() if flag else None
 	except requests.exceptions.RequestException as e:
 		print("[-] Error:", e)
-        return None
+		return None
 
 if __name__ == "__main__":
 	if len(sys.argv) > 3 or len(sys.argv) < 2:
