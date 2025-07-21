@@ -19,7 +19,7 @@ def trypass(db_path: str, passwd: str) -> bool:
         return False
     
 def Main(db_path: str, wl_path: str) -> str | None:
-    if not os.path.isfile(db_path) or not str(db_path).endswith(".kdbx"):
+    if not os.path.isfile(db_path) or not db_path.endswith(".kdbx"):
         print("[!] Invalid kdbx file:", db_path)
         return None
     
