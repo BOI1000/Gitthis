@@ -1,10 +1,11 @@
 # PrivEsc
-A folder for all privilege escalation scripts.
+A directory for privilege escalation scripts made by me.
 
-Scripts built for automating privilege escalation.
+Scripts made for automating privilege escalation.
 
 ## Updates
-- Updated IptablesEsc.sh (new function: cealUpOption)
+- Added Npbackup-cliEsc.sh
 
 ### Notes
-- working a different IptablesEsc.sh script (./IptablesEsc.sh {options})
+- Working on Npbackup-cliEsc.sh (optional feature will be non optional later)
+- IptablesEsc.sh is considered complete
